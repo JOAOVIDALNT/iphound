@@ -1,5 +1,5 @@
-using iphound.API.Providers.Service.ApiService;
-using iphound.API.Providers.Service.AppService;
+using iphound.API.Providers.Service.Ip2cService;
+using iphound.API.Providers.Service.IpManagmentService;
 using iphound.API.Providers.Service.CacheService;
 using iphound.API.Providers.Service.DatabaseService;
 using iphound.API.Providers.Service.JobService;
@@ -17,8 +17,8 @@ public static class ProviderExtension
 
     private static void AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IApiService, ApiService>();
-        services.AddScoped<IAppService, AppService>();
+        services.AddScoped<IIp2cService, Ip2cService>();
+        services.AddScoped<IIpManagmentService, IIpManagmentService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddScoped<UpdateDatabase>();
@@ -26,7 +26,7 @@ public static class ProviderExtension
 
     private static void AddHttpClient(this IServiceCollection services)
     {
-        services.AddHttpClient<IApiService, ApiService>(
+        services.AddHttpClient<IIp2cService, Ip2cService>(
             client =>
             {
                 client.BaseAddress = new Uri("https://ip2c.org");

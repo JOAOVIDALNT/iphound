@@ -1,9 +1,9 @@
 using iphound.API.Models.HttpModels.Responses;
 using iphound.API.Utils;
 
-namespace iphound.API.Providers.Service.ApiService;
+namespace iphound.API.Providers.Service.Ip2cService;
 
-public class ApiService(HttpClient httpClient) : IApiService
+public class Ip2cService(HttpClient httpClient) : IIp2cService
 {
     public async Task<IpInfoResponse> FetchIpInfo(string ip)
     {

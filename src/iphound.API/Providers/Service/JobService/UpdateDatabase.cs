@@ -1,7 +1,7 @@
 using iphound.API.Data.Repositories;
 using iphound.API.Data.Repositories.Interfaces;
 using iphound.API.Models.Entities;
-using iphound.API.Providers.Service.ApiService;
+using iphound.API.Providers.Service.Ip2cService;
 using iphound.API.Providers.Service.CacheService;
 using iphound.API.Providers.Service.DatabaseService;
 using iphound.API.Utils;
@@ -12,11 +12,11 @@ public class UpdateDatabase
 {
     private readonly IIpAddressRepository _ipAddressRepository;
     private readonly IDatabaseService _databaseService;
-    private readonly IApiService _apiService;
+    private readonly IIp2cService _apiService;
     private readonly ICacheService _cacheService;
     private readonly ILogger<UpdateDatabase> _logger;
     
-    public UpdateDatabase(IIpAddressRepository ipAddressRepository, IApiService apiService, ICacheService cacheService,
+    public UpdateDatabase(IIpAddressRepository ipAddressRepository, IIp2cService apiService, ICacheService cacheService,
         ILogger<UpdateDatabase> logger, IDatabaseService databaseService)
     {
         _ipAddressRepository = ipAddressRepository;

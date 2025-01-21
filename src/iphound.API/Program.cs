@@ -1,3 +1,4 @@
+using iphound.API.Exceptions.Filter;
 using iphound.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddData(builder.Configuration);
 builder.Services.AddProviders(builder.Configuration);
+
+builder.Services.AddMvc(options => options.Filters.Add(typeof(ExceptionFilter)));
 
 var app = builder.Build();
 

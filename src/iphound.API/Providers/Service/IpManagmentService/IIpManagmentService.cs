@@ -1,8 +1,8 @@
 using iphound.API.Models.HttpModels.Responses;
 
-namespace iphound.API.Providers.Service.AppService;
+namespace iphound.API.Providers.Service.IpManagmentService;
 
-public interface IAppService
+public interface IIpManagmentService
 {
     Task<IpInfoResponse> FetchDataAsync(string ipAddress);
 }
