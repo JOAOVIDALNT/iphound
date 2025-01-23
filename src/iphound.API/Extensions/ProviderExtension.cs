@@ -18,7 +18,7 @@ public static class ProviderExtension
     private static void AddServices(this IServiceCollection services)
     {
         services.AddScoped<IIp2cService, Ip2cService>();
-        services.AddScoped<IIpManagmentService, IIpManagmentService>();
+        services.AddScoped<IIpManagmentService, IpManagmentService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddScoped<UpdateDatabase>();

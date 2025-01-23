@@ -5,6 +5,7 @@ using iphound.API.Providers.Service.Ip2cService;
 using iphound.API.Providers.Service.IpManagmentService;
 using iphound.Tests.Builders;
 using Moq;
+using Newtonsoft.Json;
 
 namespace iphound.Tests.UnitTests.Providers.Service.IpManagmentServiceTest
 {
@@ -25,7 +26,7 @@ namespace iphound.Tests.UnitTests.Providers.Service.IpManagmentServiceTest
         public async Task Should_Fetch_Ip2c()
         {
             var ip = IpRequestBuilder.Build();
-            var ipInfoResponse = IpInfoResponseBuilder.Build(ip);
+            var IpResponse = IpInfoResponseBuilder.Build(ip);
 
             _cacheService
                 .Setup(x => x.GetAsync(It.Is<string>(x => x == ip)))
@@ -37,7 +38,7 @@ namespace iphound.Tests.UnitTests.Providers.Service.IpManagmentServiceTest
 
             _ip2cService
                 .Setup(x => x.FetchIpInfo(It.Is<string>(x => x == ip)))
-                .ReturnsAsync(ipInfoResponse);
+                .ReturnsAsync(IpResponse);
 
             var service = CreateService();
 
@@ -49,9 +50,44 @@ namespace iphound.Tests.UnitTests.Providers.Service.IpManagmentServiceTest
             _ip2cService.Verify(x => x.FetchIpInfo(It.Is<string>(x => x == ip)), Times.Once);
             _cacheService.Verify(x => x.SetAsync(It.Is<string>(x => x == ip), It.IsAny<IpInfoResponse>(), null), Times.Once);
             _dbService.Verify(x => x.SaveIpInfoAsync(It.Is<IpInfoResponse>(x => x.IpAddress == ip)), Times.Once);
-
         }
 
+        [Fact]
+        public async Task Should_Get_From_Cache()
+        {
+            var ip = IpRequestBuilder.Build();
+            var ipResponse = IpInfoResponseBuilder.Build(ip);
+
+            _cacheService.Setup(x => x.GetAsync(It.Is<string>(x => x == ip))).ReturnsAsync(JsonConvert.SerializeObject(ipResponse));
+
+            var service = CreateService();
+            var result = await service.FetchDataAsync(ip);
+
+            Assert.NotNull(result);
+            Assert.Equal(result.IpAddress, ip);
+
+            _cacheService.Verify(x => x.GetAsync(It.Is<string>(x => x == ip)), Times.Once);
+            _ip2cService.Verify(x => x.FetchIpInfo(It.Is<string>(x => x == ip)), Times.Never);
+        }
+
+        [Fact]
+        public async Task Should_Get_From_Database()
+        {
+            var ip = IpRequestBuilder.Build();
+            var ipResponse = IpInfoResponseBuilder.Build(ip);
+
+            _cacheService.Setup(x => x.GetAsync(It.Is<string>(x => x == ip))).ReturnsAsync((string?)null);
+            _dbService.Setup(x => x.GetIpInfoAsync(ip)).ReturnsAsync(ipResponse);
+
+            var service = CreateService();
+            var result = await service.FetchDataAsync(ip);
+
+            Assert.NotNull(result);
+            Assert.Equal(result.IpAddress, ip);
+
+            _cacheService.Verify(x => x.SetAsync(It.Is<string>(x => x == ip), ipResponse, null), Times.Once);
+            _dbService.Verify(x => x.GetIpInfoAsync(It.Is<string>(x => x == ip)));
+        }  
 
 
         private IpManagmentService CreateService() => new IpManagmentService(_cacheService.Object, _dbService.Object, _ip2cService.Object);
