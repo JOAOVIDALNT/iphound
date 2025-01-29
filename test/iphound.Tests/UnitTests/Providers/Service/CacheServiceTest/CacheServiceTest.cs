@@ -54,19 +54,21 @@ namespace iphound.Tests.UnitTests.Providers.Service.CacheServiceTest
             Assert.Null(result);
         }
 
-        //[Fact]
-        //public async Task Should_Save_Data()
-        //{
-        //    var key = IpRequestBuilder.Build();
-        //    var ipResponse = IpInfoResponseBuilder.Build(key);
+        [Fact]
+        public async Task Should_Save_Data()
+        {
+            var key = IpRequestBuilder.Build();
+            var ipResponse = IpInfoResponseBuilder.Build(key);
 
-        //    var service = CreateService();
+            var mockCacheService = new Mock<ICacheService>(); // Cache da própria instância pois não estava conseguindo verificar ou configurar qualquer método de IDistribuitedCache
 
-        //    await service.SetAsync(key, ipResponse);
+            var cacheService = mockCacheService.Object;
 
-        //    _cache
-        //        .Verify(x => x.SetAsync(key, It.IsAny<byte[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        //}
+            await cacheService.SetAsync(key, ipResponse);
+
+            mockCacheService
+                .Verify(x => x.SetAsync(key, ipResponse, null), Times.Once());
+        }
 
         public CacheService CreateService() => new(_cache.Object);
     }

@@ -45,18 +45,21 @@ public class UpdateDatabase
                 try
                 {
                     var latestInfo = await _apiService.FetchIpInfo(ip.Ip);
-                    
-                    if (!latestInfo.CompareInfo(ip)) // TODO: EXTENSION METHOD TO COMPARE
+
+                    if (latestInfo.Success)
                     {
-                        var entity = latestInfo.MergeInfo(ip);
-                        entity.UpdatedAt = DateTime.UtcNow;
-                        await _databaseService.UpdateIpInfoAsync(entity);
+                        if (!latestInfo.CompareInfo(ip)) // TODO: EXTENSION METHOD TO COMPARE
+                        {
+                            var entity = latestInfo.MergeInfo(ip);
+                            entity.UpdatedAt = DateTime.UtcNow;
+                            await _databaseService.UpdateIpInfoAsync(entity);
 
-                        // Invalidate the cache
-                        await _cacheService.RemoveAsync($"{ip.Ip}");
+                            await _cacheService.RemoveAsync($"{ip.Ip}");
 
-                        _logger.LogInformation($"Updated IP: {ip.Ip}");
+                            _logger.LogInformation($"Updated IP: {ip.Ip}");
+                        }
                     }
+                    
                 }
                 catch (Exception ex)
                 {
