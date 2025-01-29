@@ -90,6 +90,6 @@ namespace iphound.Tests.UnitTests.Providers.Service.IpManagmentServiceTest
         }  
 
 
-        private IpManagmentService CreateService() => new IpManagmentService(_cacheService.Object, _dbService.Object, _ip2cService.Object);
+        private IpManagmentService CreateService() => new(_cacheService.Object, _dbService.Object, _ip2cService.Object);
     }
 }
